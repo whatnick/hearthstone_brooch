@@ -1,0 +1,7 @@
+cadquery
+PyQt5
+spyder 
+pyqtgraph 
+logbook
+git+https://github.com/CadQuery/CQ-editor.git
+git+https://github.com/JustinSDK/cqMore

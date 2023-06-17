@@ -22,7 +22,8 @@ A-->S[software - Python SOftware]
 - Any other hardware enhancement functions we dream of
 
 ## Python Software
-Generates pattern arrays for the blinking waveform.
+- Generates pattern arrays for the blinking waveform.
+- Parametrically generates Brooch with [Cadquery](https://github.com/CadQuery/cadquery)
 
 **NOTE** : This is purely a hobby item. Replicate at your own risk.
 
