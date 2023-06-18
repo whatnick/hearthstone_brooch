@@ -53,7 +53,7 @@ def tetrahedron_circle(in_tetrahedron,linear_offset, angular_offset = 0):
     
     return tetrahedrons
 
-def tri_ring(radius, base_width, height, ):
+def tri_ring(radius, base_width, height):
     path = cq.Workplane().circle(5)
 
     rv = (
@@ -68,20 +68,13 @@ def create_cabochon_profile(radius, height):
     # Define the radius and height of the cabochon
     cabochon_radius = radius
     cabochon_height = height
-
+    path = cq.Workplane().circle(5)
     # Define the center point of the arc
-    arc_center = cq.Vector(cabochon_radius, 0)
-
-    # Create the arc, horizontal line, and vertical line
-    arc = cq.Edge.makeCircle(cq.Vector(0, 0), cabochon_radius)
-    horizontal_line = cq.Edge.makeLine(cq.Vector(-cabochon_radius, 0), cq.Vector(cabochon_radius, 0))
-    vertical_line = cq.Edge.makeLine(cq.Vector(0, -cabochon_radius), cq.Vector(0, cabochon_radius))
-
-    # Combine the edges to create the profile
-    profile = cq.Wire.makeCompound([arc, horizontal_line, vertical_line])
-
-    # Sweep the profile to create the cabochon
-    cabochon = cq.Workplane("XY").add(profile).extrude(cabochon_height)
+    cabochon = (cq.Workplane("YZ")
+        .lineTo(radius, 0)
+        .threePointArc((0.0, height), (-radius, 0.0))
+        .close()
+        .sweep(path, transition="round"))
 
     return cabochon
 
@@ -97,7 +90,8 @@ tetrahedrons_inner = tetrahedron_circle(tetrahedron_obj, 5, 45)
 show_object(tetrahedrons_outer)
 show_object(tetrahedrons_inner)
 
-rv = tri_ring(25, 15, 5)
-#cabochon = create_cabochon_profile(25, 4)
+rv = tri_ring(25, 15, 6)
+cabochon = create_cabochon_profile(25, 10)
 
 show_object(rv)
+show_object(cabochon)
