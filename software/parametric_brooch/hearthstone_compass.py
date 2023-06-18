@@ -2,6 +2,7 @@ import cadquery as cq
 from cqmore import Workplane
 from cqmore.curve import logarithmicSpiral
 import math
+import numpy as np
 
 # Define the compass parameters
 
@@ -87,24 +88,24 @@ def create_cabochon_profile(radius, height):
 
     return cabochon
 
-def create_spiral_extrude(iterations = 5, height = cabochon_height):
+def create_spiral_extrude(iterations = 5, width = cabochon_radius, height = cabochon_height):
     # https://github.com/CadQuery/cadquery/pull/110
     # Use parametric curve for spiral
     # Offset by certain amount or buffer with angular edges
+    spiral_pts = np.array(
+        [logarithmicSpiral(t / 14) for t in range(14 * iterations)])/(cabochon_radius*30)
     fib_spiral = (Workplane()
-            .polyline([logarithmicSpiral(t / 360) for t in range(360 * iterations)])
+            .polyline(spiral_pts)
          )
-        
-    # Displace points in along tangent
-    fib_spiral_inner = None
-    # Displace points out along tangent
-    fib_spiral_outer = None
-
-    # Reverse profile and merge and close polylines
-    spiral_profiles = None
-
-    # extrude along z
-    spiral_extrude = None
+    
+    spiral_extrude = (
+        cq.Workplane("YZ")
+        .rect(5, height * 2)
+        .sweep(fib_spiral, transition="round" )
+    )
+    
+    spiral_extrude = spiral_extrude.translate((-width/8, width/4,0))
+    spiral_extrude = spiral_extrude.mirror(mirrorPlane="XZ")
 
     return spiral_extrude
 
@@ -119,8 +120,12 @@ tetrahedrons_inner = tetrahedron_circle(tetrahedron_obj, 5, 45)
 rv = tri_ring(cabochon_radius, ring_base, cabochon_height * height_ratio)
 cabochon = create_cabochon_profile(cabochon_radius , cabochon_height)
 
+# Add Spiral and subtract from Cabochon
+central_spiral = create_spiral_extrude()
+
 # Display the model
 show_object(tetrahedrons_outer)
 show_object(tetrahedrons_inner)
 show_object(rv)
 show_object(cabochon)
+show_object(central_spiral)
