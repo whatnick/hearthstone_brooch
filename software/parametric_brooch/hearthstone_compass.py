@@ -1,11 +1,20 @@
 import cadquery as cq
 from cqmore import Workplane
+from cqmore.curve import logarithmicSpiral
 import math
 
-# Define the tetrahedral parameters
+# Define the compass parameters
+
+# Tetrahedral
 edge_length = 10  # Length of the shortest edge
 longest_edge_length = 30  # Length of the longest edge
 scaling_factor = 1.4
+
+# Circle sweeps
+cabochon_radius = 25 # Width of the central section
+cabochon_height = 10 # Thickness of the central section
+height_ratio = 0.6 # Centre to edge ring ratio
+ring_base = 15
 
 # Create a tetrahedron
 def create_tetrahedron(edge_length, longest_edge_length, scaling_factor ):
@@ -78,6 +87,27 @@ def create_cabochon_profile(radius, height):
 
     return cabochon
 
+def create_spiral_extrude(iterations = 5, height = cabochon_height):
+    # https://github.com/CadQuery/cadquery/pull/110
+    # Use parametric curve for spiral
+    # Offset by certain amount or buffer with angular edges
+    fib_spiral = (Workplane()
+            .polyline([logarithmicSpiral(t / 360) for t in range(360 * iterations)])
+         )
+        
+    # Displace points in along tangent
+    fib_spiral_inner = None
+    # Displace points out along tangent
+    fib_spiral_outer = None
+
+    # Reverse profile and merge and close polylines
+    spiral_profiles = None
+
+    # extrude along z
+    spiral_extrude = None
+
+    return spiral_extrude
+
 # Create the tetrahedron object
 tetrahedron_obj = create_tetrahedron(edge_length, longest_edge_length, scaling_factor)
 
@@ -85,13 +115,12 @@ tetrahedron_obj = create_tetrahedron(edge_length, longest_edge_length, scaling_f
 tetrahedrons_outer = tetrahedron_circle(tetrahedron_obj, 6)
 tetrahedrons_inner = tetrahedron_circle(tetrahedron_obj, 5, 45)
 
+# Create circular swept ring and cabochon
+rv = tri_ring(cabochon_radius, ring_base, cabochon_height * height_ratio)
+cabochon = create_cabochon_profile(cabochon_radius , cabochon_height)
 
 # Display the model
 show_object(tetrahedrons_outer)
 show_object(tetrahedrons_inner)
-
-rv = tri_ring(25, 15, 6)
-cabochon = create_cabochon_profile(25, 10)
-
 show_object(rv)
 show_object(cabochon)
