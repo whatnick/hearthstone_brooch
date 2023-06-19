@@ -1,6 +1,6 @@
 # HearthStone Brooch
 
-An electronics wearable in the shame of the 8-point hearthstone star
+An electronics wearable in the shape of the 8-point hearthstone star
 
 ## Project Layout
 
@@ -15,9 +15,12 @@ A-->S[software - Python SOftware]
 ## Electronics Design
 
 ## Mechanical Design
+FreeCAD Assemblies with :
+- Front of the brooch
+- Rear lid + putting on pin
 
 ## Arduino Firmware Functions
-- Creates porogressive brightness shift of LED's to create breathing pattern
+- Creates progressive brightness shift of LED's to create breathing pattern
 - Turns lighting effect on and off
 - Any other hardware enhancement functions we dream of
 
